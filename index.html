@@ -241,7 +241,6 @@ let historyStudents = [];
 let isSpeechEnabled = true;
 let isEffectEnabled = true;
 let isRolling = false;
-let dropdownTimeout = null;
 
 const elements = {
     studentInput: document.getElementById('studentInput'),
@@ -267,10 +266,24 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.effectToggle.addEventListener('click', toggleEffect);
     elements.speechToggle.addEventListener('click', toggleSpeech);
     elements.fileInput.addEventListener('change', handleFileUpload);
-    elements.dropdown.addEventListener('mouseenter', handleDropdownShow);
-    elements.dropdown.addEventListener('mouseleave', handleDropdownHide);
-    elements.dropdownContent.addEventListener('mouseenter', cancelDropdownHide);
-    elements.dropdownContent.addEventListener('mouseleave', handleDropdownHide);
+    
+    // 下拉菜单控制
+    document.getElementById('moreBtn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        elements.dropdownContent.classList.toggle('active');
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!elements.dropdown.contains(e.target)) {
+            elements.dropdownContent.classList.remove('active');
+        }
+    });
+    
+    elements.dropdownContent.addEventListener('click', function(e) {
+        if (e.target.tagName === 'BUTTON') {
+            elements.dropdownContent.classList.remove('active');
+        }
+    });
     
     document.addEventListener('keydown', function(event) {
         if (event.key === 'F8') {
@@ -279,21 +292,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
-function handleDropdownShow() {
-    clearTimeout(dropdownTimeout);
-    elements.dropdownContent.classList.add('active');
-}
-
-function handleDropdownHide() {
-    dropdownTimeout = setTimeout(() => {
-        elements.dropdownContent.classList.remove('active');
-    }, 300);
-}
-
-function cancelDropdownHide() {
-    clearTimeout(dropdownTimeout);
-}
 
 function handleStudentInput(e) {
     if (e.key === 'Enter') {
